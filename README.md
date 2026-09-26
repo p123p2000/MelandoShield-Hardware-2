@@ -1,71 +1,73 @@
 # MelandoShield Hardware 2
 
-本项目使用 CanMV K230 摄像头检测粘虫板上的昆虫数量，并通过 Wi-Fi 将计数数据和检测图片发送到电脑网页。电脑端可查看农田热力图、监测点详情、最近图片和诱虫灯状态。
+[English](README.md) | [中文](README_CN.md)
 
-## 硬件
+This project uses a CanMV K230 camera to detect insects on a sticky board. It sends insect counts and detection images to a computer over Wi-Fi. The computer dashboard displays the field heatmap, monitoring-point details, recent images, and attractant-light status.
 
-- CanMV K230 与 GC2093 摄像头
-- WS2812 环形灯带 12 颗
-- 电脑端 Python 服务
-- 同一 Wi-Fi 或手机热点
+## Hardware
 
-WS2812 接线：数据线接 GPIO42，电源线和地线按灯带额定电压连接，K230 与灯带必须共地。
+- CanMV K230 with GC2093 camera
+- 12-pixel WS2812 ring light
+- Computer running the Python service
+- One shared Wi-Fi network or mobile hotspot
 
-## 快速开始
+WS2812 wiring: connect the data line to GPIO42. Connect power and ground according to the LED strip's rated voltage. The K230 and the LED strip must share a common ground.
 
-1. 将 K230 和电脑连接到同一个 Wi-Fi 或手机热点。
-2. 在电脑上双击 `Start_monitoring_service.bat`，浏览器打开 `http://127.0.0.1:8000`。
-3. 在电脑终端运行 `ipconfig`，记录 `WLAN` 的 IPv4 地址。
-4. 打开 `main.py`，修改顶部三项配置：
+## Quick start
+
+1. Connect the K230 and the computer to the same Wi-Fi network or mobile hotspot.
+2. On the computer, double-click `Start_monitoring_service.bat`. The browser will open `http://127.0.0.1:8000`.
+3. Run `ipconfig` in a computer terminal and find the IPv4 address of the `WLAN` adapter.
+4. Open `main.py` and update these three settings at the top:
 
    ```python
-   WIFI_SSID = "你的 Wi-Fi 名称"
-   WIFI_PASSWORD = "你的 Wi-Fi 密码"
-   SERVER_IP = "电脑 WLAN IPv4 地址"
+   WIFI_SSID = "your Wi-Fi name"
+   WIFI_PASSWORD = "your Wi-Fi password"
+   SERVER_IP = "computer WLAN IPv4 address"
    ```
 
-5. 将 `main.py` 上传到 K230 的 `/sdcard/main.py`，重启并运行程序。
-6. 正常连接后，在网页查看设备 1 的实时数量和每 10 秒上传的检测图片。
+5. Upload `main.py` to `/sdcard/main.py` on the K230, then restart and run it.
+6. When the connection is working, the dashboard will show the live count from device 1 and a new detection image about every 10 seconds.
 
-不要将 `127.0.0.1`、`198.18.0.1`、K230 自己的 IP 或热点网关填入 `SERVER_IP`。应填写电脑连接热点后 `WLAN` 网卡的 IPv4 地址。
+Do not use `127.0.0.1`, `198.18.0.1`, the K230's own IP address, or the hotspot gateway as `SERVER_IP`. Use the IPv4 address of the computer's `WLAN` adapter on the shared network.
 
-## 正常日志
+## Normal log output
 
-K230 连上 Wi-Fi 后会输出网络信息。成功连到电脑时，应出现：
+After the K230 joins Wi-Fi, it prints its network information. A successful computer connection produces messages similar to:
 
 ```text
 Connected to PC data server: (..., 10000)
 Detection image uploaded: ... bytes
 ```
 
-## 功能说明
+## Main functions
 
-- K230 持续采集图像并检测白色粘虫板上的深色目标。
-- 最近 7 次有效检测结果取中位数，作为稳定虫子数量。
-- 计数数据约每 0.5 秒发送一次，检测图片每 10 秒上传一次。
-- WS2812 灯带启动后默认点亮；网页可以下发开关、亮度和目标波段设定。
-- 真实检测图片保存到电脑端 `data/images/device-1`，最多保留最近 30 张。
+- The K230 continuously captures images and detects dark targets on the white sticky board.
+- The stable insect count is calculated as the median of the most recent seven valid detections.
+- Count data is sent about every 0.5 seconds, and a detection image is uploaded every 10 seconds.
+- The WS2812 ring light turns on at startup. The dashboard can send light on/off, brightness, and target-band settings.
+- Real K230 images are stored in `data/images/device-1`. The service keeps the latest 30 images.
 
-## 端口
+## Ports
 
-| 端口 | 用途 |
+| Port | Purpose |
 | --- | --- |
-| TCP 10000 | K230 计数数据与灯光控制指令 |
-| TCP 10002 | K230 检测图片上传 |
-| HTTP 8000 | 电脑网页和状态接口 |
+| TCP 10000 | K230 count data and light-control commands |
+| TCP 10002 | K230 detection-image upload |
+| HTTP 8000 | Dashboard and status API |
 
-## 常见问题
+## Troubleshooting
 
-`PC data server not ready: ETIMEDOUT` 或 `Detection image upload failed: ETIMEDOUT`：确认电脑服务已启动；两台设备在同一热点；`SERVER_IP` 是电脑 WLAN 地址；Windows 防火墙允许 Python 接收 TCP 10000 和 10002。
+`PC data server not ready: ETIMEDOUT` or `Detection image upload failed: ETIMEDOUT`: make sure the computer service is running, both devices use the same hotspot, `SERVER_IP` is the computer's WLAN address, and Windows Firewall allows Python to receive TCP connections on ports 10000 and 10002.
 
-网页显示离线：确认 K230 日志持续出现 `Connected to PC data server`，并检查电脑服务窗口是否收到设备连接日志。
+Dashboard shows the device as offline: check that the K230 log repeatedly shows `Connected to PC data server`, and check the computer service window for device-connection messages.
 
-能看到数量但没有新图片：检查 TCP 10002 是否被防火墙拦截，并确认 K230 上传的是最新 `main.py`。
+Counts are visible but no new images appear: check whether TCP port 10002 is blocked by the firewall and confirm that the latest `main.py` has been uploaded to the K230.
 
-## 停止服务
+## Stop the service
 
-双击 `Start_monitoring_service.bat`，或在启动服务的命令行按 `Ctrl+C`。
+Double-click `Start_monitoring_service.bat`, or press `Ctrl+C` in the terminal running the service.
 
-## 上传 GitHub 前
+## Before uploading to GitHub
 
-请删除或替换 `main.py` 中真实的 Wi-Fi 名称、Wi-Fi 密码和电脑 IP，避免将个人网络信息上传到公开仓库。
+Replace or remove the real Wi-Fi name, Wi-Fi password, and computer IP address in `main.py`. Do not publish personal network information in a public repository.
