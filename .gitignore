@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+data/
+.pc_server.lock
+*.log
+.env
+.env.*
+node_modules/
