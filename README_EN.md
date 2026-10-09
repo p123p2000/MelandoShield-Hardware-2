@@ -69,3 +69,7 @@ Double-click `Start_monitoring_service.bat`, or press `Ctrl+C` in the terminal r
 ## Before uploading to GitHub
 
 Replace or remove the real Wi-Fi name, Wi-Fi password, and computer IP address in `main.py`. Do not publish personal network information in a public repository.
+
+## License
+
+This project's original software and associated documentation are licensed under the [MIT License](LICENSE). You may use, copy, modify, and distribute them, including for commercial purposes, provided that the copyright and license notices are retained. The software is provided "AS IS", without warranty of any kind. Third-party components and materials remain subject to their respective licenses.
