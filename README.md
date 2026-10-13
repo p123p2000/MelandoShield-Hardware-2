@@ -1,4 +1,4 @@
-# MelandoShield Hardware 2
+# MelanoShield Hardware 2
 
 [English](README.md) | [中文](README_CN.md)
 
