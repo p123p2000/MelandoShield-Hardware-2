@@ -1,4 +1,4 @@
-# MelandoShield Hardware 2
+# MelanoShield Hardware 2
 
 This project uses a CanMV K230 camera to detect insects on a sticky board. It sends insect counts and detection images to a computer over Wi-Fi. The computer dashboard displays the field heatmap, monitoring-point details, recent images, and attractant-light status.
 
